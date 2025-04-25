@@ -1,5 +1,5 @@
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { v4 as uuidv4 } from 'uuid';
 import { Product, Order } from '@/lib/api';
 
@@ -48,63 +48,73 @@ let orders: Order[] = [
 
 export const handlers = [
   // GET all products
-  rest.get('/api/products', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(products));
+  http.get('/api/products', () => {
+    return HttpResponse.json(products);
   }),
 
   // GET product by ID
-  rest.get('/api/products/:id', (req, res, ctx) => {
-    const { id } = req.params;
+  http.get('/api/products/:id', ({ params }) => {
+    const { id } = params;
     const product = products.find((p) => p.id === Number(id));
     
     if (!product) {
-      return res(ctx.status(404), ctx.json({ message: 'Product not found' }));
+      return new HttpResponse(JSON.stringify({ message: 'Product not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
-    return res(ctx.status(200), ctx.json(product));
+    return HttpResponse.json(product);
   }),
 
   // POST create product
-  rest.post('/api/products', async (req, res, ctx) => {
-    const newProduct = await req.json() as Omit<Product, 'id'>;
+  http.post('/api/products', async ({ request }) => {
+    const newProduct = await request.json() as Omit<Product, 'id'>;
     const id = products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
     
     const product = { id, ...newProduct };
     products.push(product);
     
-    return res(ctx.status(201), ctx.json(product));
+    return HttpResponse.json(product, { status: 201 });
   }),
 
   // PUT update product
-  rest.put('/api/products/:id', async (req, res, ctx) => {
-    const { id } = req.params;
-    const updates = await req.json() as Partial<Product>;
+  http.put('/api/products/:id', async ({ params, request }) => {
+    const { id } = params;
+    const updates = await request.json() as Partial<Product>;
     const index = products.findIndex((p) => p.id === Number(id));
     
     if (index === -1) {
-      return res(ctx.status(404), ctx.json({ message: 'Product not found' }));
+      return new HttpResponse(JSON.stringify({ message: 'Product not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
     products[index] = { ...products[index], ...updates };
-    return res(ctx.status(200), ctx.json(products[index]));
+    return HttpResponse.json(products[index]);
   }),
 
   // DELETE product
-  rest.delete('/api/products/:id', (req, res, ctx) => {
-    const { id } = req.params;
+  http.delete('/api/products/:id', ({ params }) => {
+    const { id } = params;
     const index = products.findIndex((p) => p.id === Number(id));
     
     if (index === -1) {
-      return res(ctx.status(404), ctx.json({ message: 'Product not found' }));
+      return new HttpResponse(JSON.stringify({ message: 'Product not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
     products.splice(index, 1);
-    return res(ctx.status(200), ctx.json({ message: 'Product deleted' }));
+    return HttpResponse.json({ message: 'Product deleted' });
   }),
 
   // GET all orders
-  rest.get('/api/orders', (req, res, ctx) => {
-    const buyer = req.url.searchParams.get('buyer');
+  http.get('/api/orders', ({ request }) => {
+    const url = new URL(request.url);
+    const buyer = url.searchParams.get('buyer');
     let filteredOrders = orders;
     
     if (buyer) {
@@ -119,32 +129,38 @@ export const handlers = [
       return { ...order, product };
     });
     
-    return res(ctx.status(200), ctx.json(ordersWithProducts));
+    return HttpResponse.json(ordersWithProducts);
   }),
 
   // GET order by ID
-  rest.get('/api/orders/:id', (req, res, ctx) => {
-    const { id } = req.params;
+  http.get('/api/orders/:id', ({ params }) => {
+    const { id } = params;
     const order = orders.find((o) => o.id === id);
     
     if (!order) {
-      return res(ctx.status(404), ctx.json({ message: 'Order not found' }));
+      return new HttpResponse(JSON.stringify({ message: 'Order not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
     // Add product details to order
     const product = products.find((p) => p.id === order.productId);
     
-    return res(ctx.status(200), ctx.json({ ...order, product }));
+    return HttpResponse.json({ ...order, product });
   }),
 
   // POST create order
-  rest.post('/api/orders', async (req, res, ctx) => {
-    const orderData = await req.json() as Omit<Order, 'id' | 'createdAt' | 'status'>;
+  http.post('/api/orders', async ({ request }) => {
+    const orderData = await request.json() as Omit<Order, 'id' | 'createdAt' | 'status'>;
     
     // Validate product exists
     const product = products.find((p) => p.id === orderData.productId);
     if (!product) {
-      return res(ctx.status(400), ctx.json({ message: 'Invalid product ID' }));
+      return new HttpResponse(JSON.stringify({ message: 'Invalid product ID' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
     const newOrder: Order = {
@@ -155,17 +171,20 @@ export const handlers = [
     };
     
     orders.push(newOrder);
-    return res(ctx.status(201), ctx.json({ ...newOrder, product }));
+    return HttpResponse.json({ ...newOrder, product }, { status: 201 });
   }),
 
   // PUT update order status
-  rest.put('/api/orders/:id', async (req, res, ctx) => {
-    const { id } = req.params;
-    const updates = await req.json() as { status: Order['status'] };
+  http.put('/api/orders/:id', async ({ params, request }) => {
+    const { id } = params;
+    const updates = await request.json() as { status: Order['status'] };
     const index = orders.findIndex((o) => o.id === id);
     
     if (index === -1) {
-      return res(ctx.status(404), ctx.json({ message: 'Order not found' }));
+      return new HttpResponse(JSON.stringify({ message: 'Order not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
     orders[index] = { ...orders[index], status: updates.status };
@@ -173,9 +192,6 @@ export const handlers = [
     // Add product details
     const product = products.find((p) => p.id === orders[index].productId);
     
-    return res(
-      ctx.status(200), 
-      ctx.json({ ...orders[index], product })
-    );
+    return HttpResponse.json({ ...orders[index], product });
   }),
 ];
