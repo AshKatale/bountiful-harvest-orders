@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -45,10 +44,10 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<Order["status"] | "all">("all");
 
-  // Fetch orders
+  // Fetch orders - fixing the useQuery syntax to match TanStack v5+
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
-    queryFn: ordersApi.getAll,
+    queryFn: () => ordersApi.getAll(),
   });
 
   // Status update mutation
