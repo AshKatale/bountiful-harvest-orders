@@ -1,7 +1,5 @@
 
-import { toast } from "@/components/ui/use-toast";
-
-// Type definitions removed (this is JavaScript)
+import { toast } from "sonner";
 
 // Base API URL
 const API_URL = "/api";
@@ -15,11 +13,7 @@ const handleApiError = (error) => {
     message = error.message;
   }
   
-  toast({
-    title: "Error",
-    description: message,
-    variant: "destructive",
-  });
+  toast.error(message);
   
   throw error;
 };

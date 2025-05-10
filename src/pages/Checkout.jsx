@@ -41,9 +41,18 @@ const Checkout = () => {
       total: getCartTotal()
     });
     
+    // Generate a random order ID for tracking
+    const orderId = Math.random().toString(36).substring(2, 10).toUpperCase();
+    
     toast.success("Order placed successfully! We'll contact you shortly.");
+    
+    // Navigate to order tracking with the new order ID
+    navigate(`/order/tracking`, { 
+      state: { 
+        orderId: orderId
+      } 
+    });
     clearCart();
-    navigate('/');
   };
 
   return (
@@ -88,6 +97,7 @@ const Checkout = () => {
                   onChange={handleChange} 
                   required
                   placeholder="John Doe"
+                  className="px-3 py-2"
                 />
               </div>
               
@@ -101,6 +111,7 @@ const Checkout = () => {
                   onChange={handleChange} 
                   required
                   placeholder="your@email.com"
+                  className="px-3 py-2"
                 />
               </div>
             </div>
@@ -115,6 +126,7 @@ const Checkout = () => {
                 onChange={handleChange} 
                 required
                 placeholder="(123) 456-7890"
+                className="px-3 py-2"
               />
             </div>
             
@@ -127,6 +139,7 @@ const Checkout = () => {
                 onChange={handleChange} 
                 required
                 placeholder="123 Street Name"
+                className="px-3 py-2"
               />
             </div>
             
@@ -140,6 +153,7 @@ const Checkout = () => {
                   onChange={handleChange} 
                   required
                   placeholder="City"
+                  className="px-3 py-2"
                 />
               </div>
               
@@ -152,6 +166,7 @@ const Checkout = () => {
                   onChange={handleChange} 
                   required
                   placeholder="State"
+                  className="px-3 py-2"
                 />
               </div>
               
@@ -164,6 +179,7 @@ const Checkout = () => {
                   onChange={handleChange} 
                   required
                   placeholder="ZIP Code"
+                  className="px-3 py-2"
                 />
               </div>
             </div>
@@ -177,6 +193,7 @@ const Checkout = () => {
                 onChange={handleChange} 
                 placeholder="Special delivery instructions or other notes"
                 rows={4}
+                className="px-3 py-2"
               />
             </div>
             

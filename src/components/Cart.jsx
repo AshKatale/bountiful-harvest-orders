@@ -59,11 +59,6 @@ const Cart = () => {
     setIsCartOpen(false);
   };
 
-  const handleContinueShopping = () => {
-    navigate('/products');
-    setIsCartOpen(false);
-  };
-
   if (!isCartOpen) return null;
 
   return (
@@ -94,7 +89,10 @@ const Cart = () => {
                 </p>
                 <Button
                   className="mt-6"
-                  onClick={handleContinueShopping}
+                  onClick={() => {
+                    navigate('/products');
+                    setIsCartOpen(false);
+                  }}
                 >
                   Browse Products
                 </Button>
@@ -119,10 +117,13 @@ const Cart = () => {
                   Continue to Shipping
                 </Button>
                 <Button 
-                  onClick={handleContinueShopping} 
                   variant="outline" 
                   size="lg" 
                   className="w-full"
+                  onClick={() => {
+                    navigate('/products');
+                    setIsCartOpen(false);
+                  }}
                 >
                   Continue Shopping
                 </Button>
