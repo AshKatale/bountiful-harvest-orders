@@ -3,7 +3,6 @@ import { ShoppingCart, X, Trash, Plus, Minus } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 
 const CartItem = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCart();
@@ -54,9 +53,13 @@ const CartItem = ({ item }) => {
 const Cart = () => {
   const { cartItems, isCartOpen, setIsCartOpen, getCartTotal, clearCart } = useCart();
   const navigate = useNavigate();
-  const [checkoutStep, setCheckoutStep] = useState('cart');
 
   const handleCheckout = () => {
+    navigate('/checkout');
+    setIsCartOpen(false);
+  };
+
+  const handleContinueShopping = () => {
     navigate('/products');
     setIsCartOpen(false);
   };
@@ -91,10 +94,7 @@ const Cart = () => {
                 </p>
                 <Button
                   className="mt-6"
-                  onClick={() => {
-                    navigate('/products');
-                    setIsCartOpen(false);
-                  }}
+                  onClick={handleContinueShopping}
                 >
                   Browse Products
                 </Button>
@@ -116,6 +116,14 @@ const Cart = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <Button onClick={handleCheckout} size="lg" className="w-full">
+                  Continue to Shipping
+                </Button>
+                <Button 
+                  onClick={handleContinueShopping} 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full"
+                >
                   Continue Shopping
                 </Button>
                 <Button 
@@ -125,21 +133,6 @@ const Cart = () => {
                 >
                   Clear Cart
                 </Button>
-              </div>
-              <div className="mt-6 text-center text-sm text-gray-500">
-                <p>
-                  or{' '}
-                  <button
-                    type="button"
-                    className="font-medium text-agro hover:text-agro-dark"
-                    onClick={() => {
-                      setIsCartOpen(false);
-                    }}
-                  >
-                    Continue Shopping
-                    <span aria-hidden="true"> &rarr;</span>
-                  </button>
-                </p>
               </div>
             </div>
           )}

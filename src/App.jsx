@@ -14,6 +14,7 @@ import OrderTracking from "./pages/OrderTracking";
 import AdminDashboard from "./pages/AdminDashboard";
 import InventoryManagement from "./pages/InventoryManagement";
 import NotFound from "./pages/NotFound";
+import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/" element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
+              <Route path="checkout" element={<Checkout />} />
               <Route path="order/tracking" element={<OrderTracking />} />
               <Route path="admin">
                 <Route index element={<AdminDashboard />} />
