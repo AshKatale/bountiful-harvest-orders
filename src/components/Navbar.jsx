@@ -1,10 +1,9 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ShoppingCart, Package } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu, X, Package } from "lucide-react";
 
-const Navbar = () => {
+const Navbar = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -28,19 +27,18 @@ const Navbar = () => {
             <Link to="/products" className="text-white hover:text-gray-200">
               Products
             </Link>
-            <Link to="/order" className="text-white hover:text-gray-200">
-              Place Order
-            </Link>
             <Link to="/order/tracking" className="text-white hover:text-gray-200">
               Track Order
             </Link>
             <Link to="/admin" className="text-white hover:text-gray-200">
               Admin
             </Link>
+            {children}
           </div>
 
-          {/* Mobile Navigation Button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile Navigation Button & Cart Button */}
+          <div className="md:hidden flex items-center space-x-4">
+            {children}
             <button
               onClick={toggleMenu}
               className="text-white focus:outline-none"
@@ -71,13 +69,6 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 Products
-              </Link>
-              <Link
-                to="/order"
-                className="text-white hover:text-gray-200 py-2"
-                onClick={toggleMenu}
-              >
-                Place Order
               </Link>
               <Link
                 to="/order/tracking"
